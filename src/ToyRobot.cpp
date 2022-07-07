@@ -1,7 +1,14 @@
-#include <iostream>
+#include "../include/ToyRobot.h"
 
-int main()
+using namespace std;
+
+void Robot::init(int _x, int _y, Dir _dir)
 {
-	std::cout << "Hello ToyRobot!" << std::endl;
-	return 0;
+
 }
+
+string Robot::report()
+{
+	return "0, 0, NORTH";
+}
+

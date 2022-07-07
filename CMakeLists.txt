@@ -26,7 +26,9 @@ FetchContent_MakeAvailable(googletest)
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
 include_directories(${COMMON_INCLUDES})
 
-add_executable(ToyRobot src/ToyRobot.cpp)
+add_library(ToyRobot_lib src/ToyRobot.cpp)
+add_executable(ToyRobot src/main.cpp)
+target_link_libraries(ToyRobot ToyRobot_lib)
 
 enable_testing()
 
@@ -34,10 +36,9 @@ add_executable(
   ToyRobotTest
   tests/ToyRobotTest.cpp
 )
-target_link_libraries(
-  ToyRobotTest
-  gtest_main
-)
+
+target_link_libraries(ToyRobotTest gtest_main)
+target_link_libraries(ToyRobotTest ToyRobot_lib)
 
 include(GoogleTest)
 gtest_discover_tests(ToyRobotTest)
