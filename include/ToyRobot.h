@@ -36,6 +36,7 @@ public:
 	virtual void rotateLeft() = 0;
 	virtual void rotateRight() = 0;
 	virtual std::string report() const = 0;
+	virtual bool isReady() const = 0;
 };
 
 class Robot : public IRobot
@@ -47,9 +48,11 @@ public:
 	virtual void rotateLeft();
 	virtual void rotateRight();
 	virtual std::string report() const;
+	virtual bool isReady() const;
 
 protected:
 	bool table_inited = false;
+	bool is_placed = false;
 	int table_w;
 	int table_h;
 	int x;

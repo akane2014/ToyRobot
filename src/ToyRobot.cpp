@@ -117,6 +117,7 @@ void Robot::place(int _x, int _y, Dir _dir)
 		x = _x;
 		y = _y;
 		dir = _dir;
+		is_placed = true;
 	}
 	else
 	{
@@ -126,36 +127,57 @@ void Robot::place(int _x, int _y, Dir _dir)
 
 bool Robot::move()
 {
-	int delta_x = 0;
-	int delta_y = 0;
-	toDelta(dir, delta_x, delta_y);
-	int new_x = x + delta_x;
-	int new_y = y + delta_y;
-	if (new_x >= table_w || new_x < 0 || new_y >= table_h || new_y < 0)
+	if (is_placed)
 	{
-		return false;
-	}
-	else
-	{
-		x = new_x;
-		y = new_y;
-		return true;
+		int delta_x = 0;
+		int delta_y = 0;
+		toDelta(dir, delta_x, delta_y);
+		int new_x = x + delta_x;
+		int new_y = y + delta_y;
+		if (new_x >= table_w || new_x < 0 || new_y >= table_h || new_y < 0)
+		{
+			return false;
+		}
+		else
+		{
+			x = new_x;
+			y = new_y;
+			return true;
+		}
 	}
 }
 
 void Robot::rotateLeft()
 {
-	dir = dirRotateLeft(dir);
+	if (is_placed)
+	{
+		dir = dirRotateLeft(dir);
+	}
 }
 
 void Robot::rotateRight()
 {
-	dir = dirRotateRight(dir);
+	if (is_placed)
+	{
+		dir = dirRotateRight(dir);
+	}
 }
 
 string Robot::report() const
 {
-	return std::to_string(x) + ", " + std::to_string(y) + ", " + dirToString(dir);
+	if (is_placed)
+	{
+		return std::to_string(x) + ", " + std::to_string(y) + ", " + dirToString(dir);
+	}
+	else
+	{
+		return "";
+	}
+}
+
+bool Robot::isReady() const
+{
+	return is_placed;
 }
 
 //Controller
@@ -188,19 +210,23 @@ void RobotController::processCommand(std::string command)
 	}
 	else if (keyword == "MOVE")
 	{
-		robot.move();
+		if(robot.isReady())
+			robot.move();
 	}
 	else if (keyword == "LEFT")
 	{
-		robot.rotateLeft();
+		if (robot.isReady())
+			robot.rotateLeft();
 	}
 	else if (keyword == "RIGHT")
 	{
-		robot.rotateRight();
+		if (robot.isReady())
+			robot.rotateRight();
 	}
 	else if (keyword == "REPORT")
 	{
-		robot.report();
+		if (robot.isReady())
+			robot.report();
 	}
 	else
 	{

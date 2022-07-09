@@ -2,7 +2,8 @@
 #include <gmock/gmock.h>
 #include "../include/ToyRobot.h"
 
-using ::testing::AtLeast;
+using ::testing::_;
+using ::testing::Invoke;
 
 TEST(ToyRobotTest, ValidPlacement) 
 {
@@ -114,6 +115,19 @@ TEST(ToyRobotTest, CombinationWithInvalidMove)
 
 //Controller
 
+class FakeRobot : public IRobot {
+public:
+	virtual void initTableSize(int _w, int _h){}
+	virtual void place(int _x, int _y, Dir _dir){ is_ready = true; }
+	virtual bool move(){return true;}
+	virtual void rotateLeft(){}
+	virtual void rotateRight(){}
+	virtual std::string report() const{ return ""; }
+	virtual bool isReady() const{ return is_ready; }
+protected:
+	bool is_ready = false;
+};
+
 class MockRobot : public IRobot {
 public:
 	MOCK_METHOD2(initTableSize, void(int _w, int _h));
@@ -122,12 +136,22 @@ public:
 	MOCK_METHOD0(rotateLeft, void());
 	MOCK_METHOD0(rotateRight, void());
 	MOCK_CONST_METHOD0(report, std::string());
+	MOCK_CONST_METHOD0(isReady, bool());
+
+	void delegateToFake() {
+		ON_CALL(*this, place(_, _, _)).WillByDefault(Invoke(&fake, &FakeRobot::place));
+		ON_CALL(*this, isReady()).WillByDefault(Invoke(&fake, &FakeRobot::isReady));
+	}
+
+private:
+	FakeRobot fake;
 };
 
 class RobotControllerTest : public ::testing::Test {
 protected:
 	RobotControllerTest() : robot(), controller(robot)
 	{
+		robot.delegateToFake();
 		robot.initTableSize(5, 5);
 	}
 
@@ -187,4 +211,17 @@ TEST_F(RobotControllerTest, InvalidControlCommand)
 	{
 		EXPECT_STREQ("Invalid input for PLACE command", e.what());
 	}
+}
+
+TEST_F(RobotControllerTest, IgnoreCommandsBeforePlacement)
+{
+	EXPECT_CALL(robot, move()).Times(0);
+	EXPECT_CALL(robot, rotateLeft()).Times(0);
+	EXPECT_CALL(robot, rotateRight()).Times(0);
+	EXPECT_CALL(robot, report()).Times(0);
+
+	controller.processCommand("LEFT");
+	controller.processCommand("MOVE");
+	controller.processCommand("RIGHT");
+	controller.processCommand("REPORT");
 }
