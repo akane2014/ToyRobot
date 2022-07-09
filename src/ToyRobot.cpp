@@ -1,10 +1,12 @@
 #include "../include/ToyRobot.h"
 
+#include <sstream>
+
 using namespace std;
 
 //Utils
 
-std::string toString(Dir dir)
+std::string dirToString(Dir dir)
 {
 	std::string result;
 	switch (dir)
@@ -23,6 +25,30 @@ std::string toString(Dir dir)
 		break;
 	}
 	return result;
+}
+
+Dir stringToDir(std::string s_dir)
+{
+	if (s_dir == "NORTH")
+	{
+		return Dir::NORTH;
+	}
+	else if (s_dir == "EAST")
+	{
+		return Dir::EAST;
+	}
+	else if (s_dir == "SOUTH")
+	{
+		return Dir::SOUTH;
+	}
+	else if (s_dir == "WEST")
+	{
+		return Dir::WEST;
+	}
+	else
+	{
+		throw std::exception("Invalid direction");
+	}
 }
 
 void toDelta(Dir dir, int& delta_x, int& delta_y)
@@ -86,12 +112,19 @@ void Robot::place(int _x, int _y, Dir _dir)
 		throw ToyRobotException("Must initialize table size before placing the robot");
 	}
 
-	x = _x;
-	y = _y;
-	dir = _dir;
+	if (_x >= 0 && _x < table_w && _y >= 0 && _y < table_h)
+	{
+		x = _x;
+		y = _y;
+		dir = _dir;
+	}
+	else
+	{
+		throw ToyRobotException("The robot must be placed inside the table");
+	}
 }
 
-void Robot::move()
+bool Robot::move()
 {
 	int delta_x = 0;
 	int delta_y = 0;
@@ -100,12 +133,13 @@ void Robot::move()
 	int new_y = y + delta_y;
 	if (new_x >= table_w || new_x < 0 || new_y >= table_h || new_y < 0)
 	{
-		throw ToyRobotException("Robot can not be moved out of the table");
+		return false;
 	}
 	else
 	{
 		x = new_x;
 		y = new_y;
+		return true;
 	}
 }
 
@@ -119,8 +153,58 @@ void Robot::rotateRight()
 	dir = dirRotateRight(dir);
 }
 
-string Robot::report()
+string Robot::report() const
 {
-	return std::to_string(x) + ", " + std::to_string(y) + ", " + toString(dir);
+	return std::to_string(x) + ", " + std::to_string(y) + ", " + dirToString(dir);
+}
+
+//Controller
+void RobotController::processCommand(std::string command)
+{
+	std::stringstream ss(command);
+
+	std::string keyword;
+	getline(ss, keyword, ' ');
+
+	if (keyword == "PLACE")
+	{
+		std::string s_value;
+		int x, y;
+		Dir dir;
+		try
+		{
+			getline(ss, s_value, ',');
+			x = stoi(s_value);
+			getline(ss, s_value, ',');
+			y = stoi(s_value);
+			getline(ss, s_value);
+			dir = stringToDir(s_value);
+		}
+		catch (std::exception& e)
+		{
+			throw ToyRobotException("Invalid input for PLACE command");
+		}
+		robot.place(x, y, dir);
+	}
+	else if (keyword == "MOVE")
+	{
+		robot.move();
+	}
+	else if (keyword == "LEFT")
+	{
+		robot.rotateLeft();
+	}
+	else if (keyword == "RIGHT")
+	{
+		robot.rotateRight();
+	}
+	else if (keyword == "REPORT")
+	{
+		robot.report();
+	}
+	else
+	{
+		throw ToyRobotException("Unexpected command:" + keyword);
+	}
 }
 

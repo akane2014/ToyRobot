@@ -37,7 +37,7 @@ add_executable(
   tests/ToyRobotTest.cpp
 )
 
-target_link_libraries(ToyRobotTest gtest_main)
+target_link_libraries(ToyRobotTest gtest_main gmock_main)
 target_link_libraries(ToyRobotTest ToyRobot_lib)
 
 include(GoogleTest)
