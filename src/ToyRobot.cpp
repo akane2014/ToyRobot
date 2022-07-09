@@ -57,7 +57,7 @@ void toDelta(Dir dir, int& delta_x, int& delta_y)
 	{
 	case Dir::NORTH:
 		delta_x = 0;
-		delta_y = -1;
+		delta_y = 1;
 		break;
 	case Dir::EAST:
 		delta_x = 1;
@@ -65,7 +65,7 @@ void toDelta(Dir dir, int& delta_x, int& delta_y)
 		break;
 	case Dir::SOUTH:
 		delta_x = 0;
-		delta_y = 1;
+		delta_y = -1;
 		break;
 	case Dir::WEST:
 		delta_x = -1;

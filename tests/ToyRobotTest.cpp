@@ -49,18 +49,18 @@ TEST(ToyRobotTest, ValidMovement)
 {
 	Robot robot;
 	robot.initTableSize(5, 5);
-	robot.place(0, 0, Dir::SOUTH);
-	EXPECT_EQ(robot.report(), "0, 0, SOUTH");
+	robot.place(0, 0, Dir::NORTH);
+	EXPECT_EQ(robot.report(), "0, 0, NORTH");
 
 	EXPECT_TRUE(robot.move());
-	EXPECT_EQ(robot.report(), "0, 1, SOUTH");
+	EXPECT_EQ(robot.report(), "0, 1, NORTH");
 }
 
 TEST(ToyRobotTest, InvalidMovement)
 {
 	Robot robot;
 	robot.initTableSize(5, 5);
-	robot.place(0, 0, Dir::NORTH);
+	robot.place(0, 0, Dir::SOUTH);
 	EXPECT_FALSE(robot.move());
 }
 
@@ -92,10 +92,10 @@ TEST(ToyRobotTest, MoveAndRotate)
 	robot.move();
 	EXPECT_EQ(robot.report(), "1, 0, EAST");
 
-	robot.rotateRight();
-	EXPECT_EQ(robot.report(), "1, 0, SOUTH");
+	robot.rotateLeft();
+	EXPECT_EQ(robot.report(), "1, 0, NORTH");
 	robot.move();
-	EXPECT_EQ(robot.report(), "1, 1, SOUTH");
+	EXPECT_EQ(robot.report(), "1, 1, NORTH");
 }
 
 TEST(ToyRobotTest, CombinationWithInvalidMove)
@@ -106,9 +106,9 @@ TEST(ToyRobotTest, CombinationWithInvalidMove)
 
 	robot.rotateLeft();
 	robot.move();
-	robot.rotateLeft();
-	robot.move();
 	robot.rotateRight();
+	robot.move();
+	robot.rotateLeft();
 	robot.move();
 	EXPECT_EQ(robot.report(), "2, 4, WEST");
 }
