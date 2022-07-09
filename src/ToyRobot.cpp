@@ -1,6 +1,7 @@
 #include "../include/ToyRobot.h"
 
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -226,7 +227,9 @@ void RobotController::processCommand(std::string command)
 	else if (keyword == "REPORT")
 	{
 		if (robot.isReady())
-			robot.report();
+		{
+			std::cout<<robot.report()<<std::endl;
+		}
 	}
 	else
 	{
