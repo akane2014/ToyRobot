@@ -1,28 +1,56 @@
 # ToyRobot
 
-## Run The Project on Windows
+## Get started with ToyRobot
 
-Requirement:
-Visual Studio Community 2017
-cmake (version > 3.5)
+### Tested on Windows 10 with:
 
-1. Standard cmake build steps
+Visual Studio Community 2017/2019
+
+cmake 3.24.0
+
+### Tested on Ubuntu 20.04 with:
+
+gcc 8.4.0
+
+cmake 3.16.3
+
+### Build and run steps
+
+#### 1. git clone https://github.com/akane2014/ToyRobot
+
+#### 2. Standard cmake build steps
 
 ```
+❯ cd ToyRobot
 ❯ mkdir build
 ❯ cd build
-❯ cmake .. -G "Visual Studio 15 2017" -A x64
+❯ cmake ..
+❯ cmake --build .
 ```
 
-2. Open ToyRobot.sln with Visual Studio Community 2017 and build the solution
+#### 3. Run the ToyRobot program
 
-3. Run the ToyRobot program 
-
-It is located in ./build/Debug(or Release)/ToyRobot.exe and needs a filename as an input parameter to indicate where to find the commands you want to execute.
-An example run would be like:
+ToyRobot needs a filename as an input parameter to indicate where to find the commands you want to execute.
+An example run on Windows:
 ```
-❯ ./build/Debug/ToyRobot ./tests/commands_a.txt
+❯ ./Debug/ToyRobot ../tests/commands_a.txt
+❯ 0,1,NORTH
+```
+On Ubuntu:
+```
+❯ ./ToyRobot ../tests/commands_a.txt
 ❯ 0,1,NORTH
 ```
 
-## Run the Project on Linux
+#### 4. Run unit/integration tests
+
+On Windows:
+```
+❯ ./Debug/ToyRobotTest
+```
+
+On Ubuntu:
+```
+❯ ./ToyRobotTest
+```
+
