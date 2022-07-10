@@ -49,7 +49,7 @@ Dir stringToDir(std::string s_dir)
 	}
 	else
 	{
-		throw std::exception("Invalid direction");
+		throw std::invalid_argument("Invalid direction");
 	}
 }
 
@@ -208,7 +208,7 @@ void RobotController::processCommand(std::string command, ostream& stream)
 			getline(ss, s_value);
 			dir = stringToDir(s_value);
 		}
-		catch (std::exception& e)
+		catch (std::invalid_argument&)
 		{
 			throw ToyRobotException("Invalid input for PLACE command");
 		}
