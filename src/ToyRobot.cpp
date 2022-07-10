@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -146,6 +147,10 @@ bool Robot::move()
 			return true;
 		}
 	}
+	else
+	{
+		return false;
+	}
 }
 
 void Robot::rotateLeft()
@@ -168,7 +173,7 @@ string Robot::report() const
 {
 	if (is_placed)
 	{
-		return std::to_string(x) + ", " + std::to_string(y) + ", " + dirToString(dir);
+		return std::to_string(x) + "," + std::to_string(y) + "," + dirToString(dir);
 	}
 	else
 	{
@@ -182,7 +187,7 @@ bool Robot::isReady() const
 }
 
 //Controller
-void RobotController::processCommand(std::string command)
+void RobotController::processCommand(std::string command, ostream& stream)
 {
 	std::stringstream ss(command);
 
@@ -228,12 +233,30 @@ void RobotController::processCommand(std::string command)
 	{
 		if (robot.isReady())
 		{
-			std::cout<<robot.report()<<std::endl;
+			stream<<robot.report()<<std::endl;
 		}
 	}
 	else
 	{
 		throw ToyRobotException("Unexpected command:" + keyword);
+	}
+}
+
+void RobotController::executeFile(std::string filename, ostream& stream)
+{
+	std::string line;
+	std::ifstream myfile(filename);
+	if (myfile.is_open())
+	{
+		while (getline(myfile, line))
+		{
+			processCommand(line, stream);
+		}
+		myfile.close();
+	}
+	else
+	{
+		stream << "Can not open commands file" << std::endl;
 	}
 }
 

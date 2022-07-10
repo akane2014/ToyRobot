@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 //Utils
 
@@ -65,7 +66,8 @@ class RobotController
 {
 public:
 	RobotController(IRobot& _robot) : robot(_robot){}
-	void processCommand(std::string command);
+	void processCommand(std::string command, std::ostream& stream = std::cout);
+	void executeFile(std::string filename, std::ostream& stream = std::cout);
 protected:
 	IRobot& robot;
 };

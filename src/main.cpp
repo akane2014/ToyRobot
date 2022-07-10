@@ -1,6 +1,4 @@
 #include <iostream>
-#include <string>
-#include <fstream>
 
 #include "ToyRobot.h"
 
@@ -16,21 +14,7 @@ int main(int argc, char* argv[])
 	robot.initTableSize(5, 5);
 
 	RobotController controller(robot);
-
-	std::string line;
-	std::ifstream myfile(argv[1]);
-	if (myfile.is_open())
-	{
-		while (getline(myfile, line))
-		{
-			controller.processCommand(line);
-		}
-		myfile.close();
-	}
-	else
-	{
-		std::cout << "Can not open commands file" << std::endl;
-	}
+	controller.executeFile(argv[1], std::cout);
 
 	return 0;
 }

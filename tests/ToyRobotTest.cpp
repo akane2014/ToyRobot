@@ -4,16 +4,17 @@
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 
 TEST(ToyRobotTest, ValidPlacement) 
 {
 	Robot robot;
 	robot.initTableSize(5, 5);
 	robot.place(0, 0, Dir::NORTH);
-	EXPECT_EQ(robot.report(), "0, 0, NORTH");
+	EXPECT_EQ(robot.report(), "0,0,NORTH");
 
 	robot.place(3, 3, Dir::NORTH);
-	EXPECT_EQ(robot.report(), "3, 3, NORTH");
+	EXPECT_EQ(robot.report(), "3,3,NORTH");
 }
 
 TEST(ToyRobotTest, PlaceBeforeInitTable)
@@ -50,10 +51,10 @@ TEST(ToyRobotTest, ValidMovement)
 	Robot robot;
 	robot.initTableSize(5, 5);
 	robot.place(0, 0, Dir::NORTH);
-	EXPECT_EQ(robot.report(), "0, 0, NORTH");
+	EXPECT_EQ(robot.report(), "0,0,NORTH");
 
 	EXPECT_TRUE(robot.move());
-	EXPECT_EQ(robot.report(), "0, 1, NORTH");
+	EXPECT_EQ(robot.report(), "0,1,NORTH");
 }
 
 TEST(ToyRobotTest, InvalidMovement)
@@ -71,14 +72,14 @@ TEST(ToyRobotTest, RotationTest)
 	robot.place(0, 0, Dir::NORTH);
 
 	robot.rotateLeft();
-	EXPECT_EQ(robot.report(), "0, 0, WEST");
+	EXPECT_EQ(robot.report(), "0,0,WEST");
 	robot.rotateLeft();
-	EXPECT_EQ(robot.report(), "0, 0, SOUTH");
+	EXPECT_EQ(robot.report(), "0,0,SOUTH");
 
 	robot.rotateRight();
-	EXPECT_EQ(robot.report(), "0, 0, WEST");
+	EXPECT_EQ(robot.report(), "0,0,WEST");
 	robot.rotateRight();
-	EXPECT_EQ(robot.report(), "0, 0, NORTH");
+	EXPECT_EQ(robot.report(), "0,0,NORTH");
 }
 
 TEST(ToyRobotTest, MoveAndRotate)
@@ -88,14 +89,14 @@ TEST(ToyRobotTest, MoveAndRotate)
 	robot.place(0, 0, Dir::NORTH);
 
 	robot.rotateRight();
-	EXPECT_EQ(robot.report(), "0, 0, EAST");
+	EXPECT_EQ(robot.report(), "0,0,EAST");
 	robot.move();
-	EXPECT_EQ(robot.report(), "1, 0, EAST");
+	EXPECT_EQ(robot.report(), "1,0,EAST");
 
 	robot.rotateLeft();
-	EXPECT_EQ(robot.report(), "1, 0, NORTH");
+	EXPECT_EQ(robot.report(), "1,0,NORTH");
 	robot.move();
-	EXPECT_EQ(robot.report(), "1, 1, NORTH");
+	EXPECT_EQ(robot.report(), "1,1,NORTH");
 }
 
 TEST(ToyRobotTest, CombinationWithInvalidMove)
@@ -110,7 +111,7 @@ TEST(ToyRobotTest, CombinationWithInvalidMove)
 	robot.move();
 	robot.rotateLeft();
 	robot.move();
-	EXPECT_EQ(robot.report(), "2, 4, WEST");
+	EXPECT_EQ(robot.report(), "2,4,WEST");
 }
 
 //Controller
@@ -155,7 +156,7 @@ protected:
 		robot.initTableSize(5, 5);
 	}
 
-	MockRobot robot;
+	NiceMock<MockRobot> robot;
 	RobotController controller;
 };
 
@@ -225,3 +226,30 @@ TEST_F(RobotControllerTest, IgnoreCommandsBeforePlacement)
 	controller.processCommand("RIGHT");
 	controller.processCommand("REPORT");
 }
+
+class IntegrationParametersTests :public ::testing::TestWithParam<std::tuple<std::string, std::string>> {
+protected:
+	IntegrationParametersTests() : robot(), controller(robot)
+	{
+		robot.initTableSize(5, 5);
+	}
+
+	Robot robot;
+	RobotController controller;
+};
+
+TEST_P(IntegrationParametersTests, ExecuteCommandsFromFile) {
+	std::string filename = std::get<0>(GetParam());
+	std::string expected_result = std::get<1>(GetParam());
+	std::ostringstream output;
+	controller.executeFile(filename, output);
+	EXPECT_EQ(expected_result, output.str());
+}
+
+INSTANTIATE_TEST_CASE_P(
+	IntegrationTest,
+	IntegrationParametersTests,
+	::testing::Values(
+		std::make_tuple("..//tests//commands_a.txt", "0,1,NORTH\n"),
+		std::make_tuple("..//tests//commands_b.txt", "0,0,WEST\n"),
+		std::make_tuple("..//tests//commands_c.txt", "3,3,NORTH\n")));
