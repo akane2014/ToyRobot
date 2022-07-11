@@ -54,3 +54,17 @@ On Ubuntu:
 ❯ ./ToyRobotTest
 ```
 
+## Some of the decisions I made
+
+### 1. Test driven development
+
+I tried TDD for this project and it's fun. So some implementation might not be optimal but good enough for the current requirements. One example is I put the table size as a member of the Robot class.
+
+### 2. Single header/source file
+
+Since it's quite a small program, I combined all declaration/definition into a single pair of head/souce files:
+```
+./include/ToyRobot.h
+./src/ToyRobot.cpp
+```
+It's mainly to make it easier to browse if we are going to review it. It could be separated into Utils/Robot/Controller based on the tags I put in the code.
